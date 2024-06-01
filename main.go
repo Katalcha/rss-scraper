@@ -23,6 +23,9 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	// readiness
+	mux.HandleFunc(GET+HEALTHZ, healthzHandler)
+
 	server := &http.Server{
 		Addr:    HOST + PORT,
 		Handler: mux,
