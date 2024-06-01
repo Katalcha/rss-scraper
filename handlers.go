@@ -10,12 +10,9 @@ func healthzHandler(w http.ResponseWriter, r *http.Request) {
 	type OkType struct {
 		Status string `json:"status"`
 	}
-
-	payload := OkType{Status: "ok"}
-	helpers.RespondWithJSON(w, http.StatusOK, payload)
+	helpers.RespondWithJSON(w, http.StatusOK, OkType{Status: "ok"})
 }
 
 func errHandler(w http.ResponseWriter, r *http.Request) {
-	msg := "Internal Server Error"
-	helpers.RespondWithError(w, http.StatusInternalServerError, msg)
+	helpers.RespondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 }
