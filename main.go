@@ -12,7 +12,10 @@ import (
 
 func main() {
 	godotenv.Load()
-	PORT := os.Getenv(ENV_PORT)
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("PORT environment variable is not set")
+	}
 
 	// debug flag parsing e.g: --debug
 	dbg := flag.Bool("debug", false, "Enable debug mode")
@@ -23,16 +26,15 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// readiness
-	mux.HandleFunc(GET+HEALTHZ, healthzHandler)
-	// error
-	mux.HandleFunc(GET+ERR, errHandler)
+	// readiness, error
+	mux.HandleFunc("GET /v1/healthz", healthzHandler)
+	mux.HandleFunc("GET /v1/err", errHandler)
 
-	server := &http.Server{
-		Addr:    HOST + PORT,
+	srv := &http.Server{
+		Addr:    ":" + port,
 		Handler: mux,
 	}
 
-	log.Printf("Ready for takeoff...\nServing from . on port %s\n", PORT)
-	log.Fatal(server.ListenAndServe())
+	log.Printf("Ready for takeoff...\nServing on port %s\n", port)
+	log.Fatal(srv.ListenAndServe())
 }
