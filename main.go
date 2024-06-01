@@ -25,6 +25,8 @@ func main() {
 
 	// readiness
 	mux.HandleFunc(GET+HEALTHZ, healthzHandler)
+	// error
+	mux.HandleFunc(GET+ERR, errHandler)
 
 	server := &http.Server{
 		Addr:    HOST + PORT,

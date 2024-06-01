@@ -7,6 +7,7 @@ const (
 
 const (
 	HEALTHZ string = "/v1/healthz"
+	ERR     string = "/v1/err"
 )
 
 const (

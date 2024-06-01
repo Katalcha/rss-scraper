@@ -14,3 +14,8 @@ func healthzHandler(w http.ResponseWriter, r *http.Request) {
 	payload := OkType{Status: "ok"}
 	helpers.RespondWithJSON(w, http.StatusOK, payload)
 }
+
+func errHandler(w http.ResponseWriter, r *http.Request) {
+	msg := "Internal Server Error"
+	helpers.RespondWithError(w, http.StatusInternalServerError, msg)
+}
