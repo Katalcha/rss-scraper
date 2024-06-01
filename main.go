@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +13,13 @@ import (
 func main() {
 	godotenv.Load()
 	PORT := os.Getenv(ENV_PORT)
+
+	// debug flag parsing e.g: --debug
+	dbg := flag.Bool("debug", false, "Enable debug mode")
+	flag.Parse()
+	if dbg != nil && *dbg {
+		fmt.Println("Nothing happens here...")
+	}
 
 	mux := http.NewServeMux()
 
