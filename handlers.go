@@ -85,3 +85,13 @@ func (a *apiConfig) createFeedHandler(w http.ResponseWriter, r *http.Request, us
 
 	helpers.RespondWithJSON(w, http.StatusOK, databaseFeedToFeed(feed))
 }
+
+func (a *apiConfig) getFeedsHandler(w http.ResponseWriter, r *http.Request) {
+	feeds, err := a.DB.GetFeeds(r.Context())
+	if err != nil {
+		helpers.RespondWithError(w, http.StatusInternalServerError, "could not get feeds")
+		return
+	}
+
+	helpers.RespondWithJSON(w, http.StatusOK, databaseFeedsToFeeds(feeds))
+}
