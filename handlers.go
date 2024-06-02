@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Katalcha/rss-scraper/internal/auth"
 	"github.com/Katalcha/rss-scraper/internal/database"
 	"github.com/Katalcha/rss-scraper/internal/helpers"
 	"github.com/google/uuid"
@@ -54,5 +55,17 @@ func (a *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *apiConfig) getUserByAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
+	apiKey, err := auth.GetAPIKey(r.Header)
+	if err != nil {
+		helpers.RespondWithError(w, http.StatusUnauthorized, "could not find api key")
+		return
+	}
 
+	user, err := a.DB.GetUserByAPIKey(r.Context(), apiKey)
+	if err != nil {
+		helpers.RespondWithError(w, http.StatusNotFound, "could not find user")
+		return
+	}
+
+	helpers.RespondWithJSON(w, http.StatusOK, databaseUserToUser(user))
 }
