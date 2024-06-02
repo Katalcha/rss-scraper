@@ -53,10 +53,11 @@ func main() {
 	mux.HandleFunc("GET /v1/err", errHandler)
 
 	// /v1/users
-	mux.HandleFunc("GET /v1/users", apiConfig.getUserByAPIKeyHandler)
 	mux.HandleFunc("POST /v1/users", apiConfig.createUserHandler)
+	mux.HandleFunc("GET /v1/users", apiConfig.middlewareAuth(apiConfig.getUserHandler))
 
 	// /v1/feeds
+	mux.HandleFunc("POST /v1/feeds", apiConfig.middlewareAuth(apiConfig.createFeedHandler))
 
 	srv := &http.Server{
 		Addr:    ":" + port,
