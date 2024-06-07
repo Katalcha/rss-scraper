@@ -2,11 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Katalcha/rss-scraper/internal/database"
 	"github.com/joho/godotenv"
@@ -36,11 +35,11 @@ func main() {
 	dbQueries := database.New(db)
 
 	// debug flag parsing e.g: --debug
-	dbg := flag.Bool("debug", false, "Enable debug mode")
+	/* dbg := flag.Bool("debug", false, "Enable debug mode")
 	flag.Parse()
 	if dbg != nil && *dbg {
 		fmt.Println("Nothing happens here...")
-	}
+	} */
 
 	apiConfig := apiConfig{
 		DB: dbQueries,
@@ -60,10 +59,19 @@ func main() {
 	mux.HandleFunc("POST /v1/feeds", apiConfig.middlewareAuth(apiConfig.createFeedHandler))
 	mux.HandleFunc("GET /v1/feeds", apiConfig.getFeedsHandler)
 
+	// /v1/feed_follows
+	mux.HandleFunc("GET /v1/feed_follows", apiConfig.middlewareAuth(apiConfig.getFeedFollowsHandler))
+	mux.HandleFunc("POST /v1/feed_follows", apiConfig.middlewareAuth(apiConfig.createFeedFollowHandler))
+	mux.HandleFunc("DELETE /v1/feed_follows/{feedFollowID}", apiConfig.middlewareAuth(apiConfig.deleteFeedFollowHandler))
+
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: mux,
 	}
+
+	const collectionConcurrency = 10
+	const collectionInterval = time.Minute
+	go startScraping(dbQueries, collectionConcurrency, collectionInterval)
 
 	log.Printf("Ready for takeoff...\nServing on port %s\n", port)
 	log.Fatal(srv.ListenAndServe())
